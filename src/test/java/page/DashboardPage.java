@@ -22,22 +22,20 @@ public class DashboardPage {
 
 
     public int getCardBalance(int cardNumber) {
-        val text = cards.get(cardNumber-1).text();
+        val text = cards.get(cardNumber).text();
         return extractBalance(text);
     }
 
-    private  int extractBalance(String text) {
+    private int extractBalance(String text) {
         val start = text.indexOf(balanceStart);
         val finish = text.indexOf(balanceFinish);
-        val value = text.substring(start+balanceStart.length(),finish);
-        return  Integer.parseInt(value);
+        val value = text.substring(start + balanceStart.length(), finish);
+        return Integer.parseInt(value);
     }
 
     public TransferPage choosingCardForTransfer(int numberCard) {
-        SelenideElement replenishButton = replenishButtons.get(numberCard-1);
+        SelenideElement replenishButton = replenishButtons.get(numberCard);
         replenishButton.click();
         return new TransferPage();
-
     }
-
 }

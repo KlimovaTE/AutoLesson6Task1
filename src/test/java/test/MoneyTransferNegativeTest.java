@@ -1,5 +1,6 @@
 package test;
 
+import com.codeborne.selenide.Condition;
 import data.DataHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import page.DashboardPage;
 import page.LoginPage;
 
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.open;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -30,42 +32,29 @@ class MoneyTransferNegativeTest {
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         var dashboardPage = verificationPage.validVerify(verificationCode);
-        int card1Balance = dashboardPage.getCardBalance(1);
+        int card1Balance = dashboardPage.getCardBalance(0);
         int sumOfTransfer = 10000 - card1Balance;
         if (sumOfTransfer <= 0) {
-            var transferPage = dashboardPage.choosingCardForTransfer(2);
-            transferPage.transferToCard(2, sumOfTransfer);
-        } else {
             var transferPage = dashboardPage.choosingCardForTransfer(1);
-            transferPage.transferToCard(1, sumOfTransfer);
+            transferPage.transferToCard("5559 0000 0000 0002", sumOfTransfer);
+        } else {
+            var transferPage = dashboardPage.choosingCardForTransfer(0);
+            transferPage.transferToCard("5559 0000 0000 0001", sumOfTransfer);
         }
     }
 
     @Test
     void shouldTransferMoneyToFirstCardOverBalance() {
         DashboardPage dashboardPage = new DashboardPage();
-        int card1BalanceBeforeTransfer = dashboardPage.getCardBalance(1);
-        int card2BalanceBeforeTransfer = dashboardPage.getCardBalance(2);
-        var transferPage = dashboardPage.choosingCardForTransfer(1);
-        int sumOfTransfer = card2BalanceBeforeTransfer + 10;
-        transferPage.transferToCard(1, sumOfTransfer);
-        var card1BalanceAfterTransfer = dashboardPage.getCardBalance(1);
-        var card2BalanceAfterTransfer = dashboardPage.getCardBalance(2);
-        assertEquals(card1BalanceBeforeTransfer + sumOfTransfer, card1BalanceAfterTransfer);
-        assertEquals(card2BalanceBeforeTransfer - sumOfTransfer, card2BalanceAfterTransfer);
-    }
-
-    @Test
-    void shouldTransferMoneyToSecondCardOverBalance() {
-        DashboardPage dashboardPage = new DashboardPage();
-        int card1BalanceBeforeTransfer = dashboardPage.getCardBalance(1);
-        int card2BalanceBeforeTransfer = dashboardPage.getCardBalance(2);
-        var transferPage = dashboardPage.choosingCardForTransfer(2);
-        int sumOfTransfer = card1BalanceBeforeTransfer + 1;
-        transferPage.transferToCard(2, sumOfTransfer);
-        var card1BalanceAfterTransfer = dashboardPage.getCardBalance(1);
-        var card2BalanceAfterTransfer = dashboardPage.getCardBalance(2);
-        assertEquals(card2BalanceBeforeTransfer + sumOfTransfer, card2BalanceAfterTransfer);
-        assertEquals(card1BalanceBeforeTransfer - sumOfTransfer, card1BalanceAfterTransfer);
+        int card1BalanceBeforeTransfer = dashboardPage.getCardBalance(0);
+        int card2BalanceBeforeTransfer = dashboardPage.getCardBalance(1);
+        var transferPage = dashboardPage.choosingCardForTransfer(0);
+        int sumOfTransfer = 20000;
+        transferPage.transferToCard("5559 0000 0000 0001", sumOfTransfer);
+        var card1BalanceAfterTransfer = dashboardPage.getCardBalance(0);
+        var card2BalanceAfterTransfer = dashboardPage.getCardBalance(1);
+        assertEquals(card1BalanceBeforeTransfer, card1BalanceAfterTransfer);
+        assertEquals(card2BalanceBeforeTransfer, card2BalanceAfterTransfer);
+        transferPage.error().shouldBe(visible);
     }
 }
