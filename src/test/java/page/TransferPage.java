@@ -1,9 +1,6 @@
 package page;
 
 import com.codeborne.selenide.SelenideElement;
-import data.DataHelper;
-
-import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -18,16 +15,11 @@ public class TransferPage {
 
     public void transferToCard(String cardNumber, int sumOfTransfer) {
         amount.setValue(String.valueOf(sumOfTransfer));
-        if (cardNumber.equals("5559 0000 0000 0001")) {
-            fromCard.setValue("5559 0000 0000 0002");
-        } else {
-            fromCard.setValue("5559 0000 0000 0001");
-        }
+        fromCard.setValue(cardNumber);
         transferButton.click();
     }
 
     public SelenideElement error() {
-        textError.shouldHave(text("Недостаточный баланс для перевода"));
         return textError.shouldHave(text("Недостаточный баланс для перевода"));
     }
 }

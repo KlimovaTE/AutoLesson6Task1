@@ -36,10 +36,10 @@ class MoneyTransferNegativeTest {
         int sumOfTransfer = 10000 - card1Balance;
         if (sumOfTransfer <= 0) {
             var transferPage = dashboardPage.choosingCardForTransfer(1);
-            transferPage.transferToCard("5559 0000 0000 0002", sumOfTransfer);
+            transferPage.transferToCard("5559 0000 0000 0001", sumOfTransfer);
         } else {
             var transferPage = dashboardPage.choosingCardForTransfer(0);
-            transferPage.transferToCard("5559 0000 0000 0001", sumOfTransfer);
+            transferPage.transferToCard("5559 0000 0000 0002", sumOfTransfer);
         }
     }
 
@@ -50,7 +50,24 @@ class MoneyTransferNegativeTest {
         int card2BalanceBeforeTransfer = dashboardPage.getCardBalance(1);
         var transferPage = dashboardPage.choosingCardForTransfer(0);
         int sumOfTransfer = 20000;
-        transferPage.transferToCard("5559 0000 0000 0001", sumOfTransfer);
+        String cardFullNumber = DataHelper.getCardFullNumber(1);
+        transferPage.transferToCard(cardFullNumber, sumOfTransfer);
+        var card1BalanceAfterTransfer = dashboardPage.getCardBalance(0);
+        var card2BalanceAfterTransfer = dashboardPage.getCardBalance(1);
+        assertEquals(card1BalanceBeforeTransfer, card1BalanceAfterTransfer);
+        assertEquals(card2BalanceBeforeTransfer, card2BalanceAfterTransfer);
+        transferPage.error().shouldBe(visible);
+    }
+
+    @Test
+    void shouldTransferMoneyToSecondCardOverBalance() {
+        DashboardPage dashboardPage = new DashboardPage();
+        int card1BalanceBeforeTransfer = dashboardPage.getCardBalance(0);
+        int card2BalanceBeforeTransfer = dashboardPage.getCardBalance(1);
+        var transferPage = dashboardPage.choosingCardForTransfer(1);
+        int sumOfTransfer = 20000;
+        String cardFullNumber = DataHelper.getCardFullNumber(0);
+        transferPage.transferToCard(cardFullNumber, sumOfTransfer);
         var card1BalanceAfterTransfer = dashboardPage.getCardBalance(0);
         var card2BalanceAfterTransfer = dashboardPage.getCardBalance(1);
         assertEquals(card1BalanceBeforeTransfer, card1BalanceAfterTransfer);
